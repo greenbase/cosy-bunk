@@ -23,3 +23,6 @@
 │   └── visualization  <- Scripts to create exploratory and results oriented visualizations.
 │
 └── env.yml            <- The file required for reproducing the analysis environment.
+
+Link zur Projektdokumentation:
+https://www.overleaf.com/5765196698csqhvkymsyyk
