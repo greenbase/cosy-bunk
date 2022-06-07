@@ -1,3 +1,5 @@
+Projectstructure
+----------------
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
 │   ├── external       <- Data from third party sources.
@@ -23,6 +25,6 @@
 │   └── visualization  <- Scripts to create exploratory and results oriented visualizations.
 │
 └── env.yml            <- The file required for reproducing the analysis environment.
-
+----------------
 Link zur Projektdokumentation:
 https://www.overleaf.com/5765196698csqhvkymsyyk
