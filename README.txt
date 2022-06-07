@@ -9,7 +9,7 @@
 │
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
 │                         the creator's initials, and a short '-' delimited description, e.g.
-│                         "1.0-jp-initial-data-exploration"
+│                         "1.0_jp_initial-data-exploration"
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
 │
