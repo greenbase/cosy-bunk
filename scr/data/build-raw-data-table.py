@@ -11,7 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 
-sys.path.append(r"D:\1 Projekte\MBS Laromed\cosy-bunk\scr\config")
+sys.path.append(r"..\config")
 from definitions import ROOT_DIR
 
 # define paths of data location
