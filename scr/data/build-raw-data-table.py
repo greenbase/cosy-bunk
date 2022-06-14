@@ -4,14 +4,17 @@ This module reads all json files from the specified directories, parses them and
 The proper assembly of the dataframe relies on the correct mapping of files in one folder (input data) and the respective files in another folder (output data). I.e. the amount of json-files in both folders must be equal as well as the order of files within each folder must match the order in the other folder.
 
 For details on the table of data build see references>data>explanation-column-names.md
+
+To run this script change to it directory first or execute it as a module.
 """
 
 import sys
+import os
 import json
 import pandas as pd
 import numpy as np
 
-sys.path.append(r"..\config")
+sys.path.append(os.path.realpath("..\config"))
 from definitions import ROOT_DIR
 
 # define paths of data location
