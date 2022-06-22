@@ -62,6 +62,8 @@ def load_inp(path):
         if inp_file.endswith(".json"):
             with open(path.joinpath(inp_file)) as json_file:
                 forces = json.load(json_file)
+            if isinstance(forces, dict):
+                forces = forces['data']
             assert isinstance(forces, list)
 
             forces_flat = np.expand_dims(np.array(forces).flatten(), axis=0)
