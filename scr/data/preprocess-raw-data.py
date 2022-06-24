@@ -76,9 +76,9 @@ def load_inp(path):
 def load_out(path):
     # define column names for force sensor readings
     # Pattern: "position.<joint_index>.<dimension>"
-    important_joints = [0, 1, 2, 3, 6, 7, 12, 13, 14, 18, 19, 20, 22, 23, 24, 26]
+    important_joints = [0, 1, 2, 3, 5, 6, 7, 12, 13, 14, 18, 19, 20, 22, 23, 24, 26]
     joint_column_names = [f"position.{joint_index}.{dimension}" for joint_index in important_joints
-                          for dimension in ['x', 'y', 'z']]
+                          for dimension in ['x', 'y']]
     df_joints = pd.DataFrame(columns=joint_column_names)  # collects readings for all datapoints
     for out_file in os.listdir(path):
         if out_file.endswith(".json"):
@@ -91,7 +91,7 @@ def load_out(path):
             for joint_index in important_joints:
                 joint_dict = joints_data[joint_index]
 
-                positions.append(joint_dict['position']['v'])
+                positions.append(joint_dict['position']['v'][:2])
             positions_flat = np.expand_dims(np.array(positions).flatten(), axis=0)
             df_joints = df_joints.append(pd.DataFrame(positions_flat, columns=joint_column_names))
 
@@ -102,7 +102,7 @@ def scale_and_safe_data(data, dest_path, prefix):
     scaler = DataScaler(data)
     scaled_data = scaler.transform(data)
     pickle.dump(scaler, open(dest_path.joinpath('{}_scaler.pkl'.format(prefix)), 'wb'))
-    scaled_data.reset_index(drop=True).to_csv(dest_path.joinpath("{}.csv".format(prefix)))
+    scaled_data.to_csv(dest_path.joinpath("{}.csv".format(prefix)), index=False)
 
 
 if __name__ == '__main__':
