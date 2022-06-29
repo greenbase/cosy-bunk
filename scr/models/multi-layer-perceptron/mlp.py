@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from torch import relu
 import torch.nn as nn
 
@@ -10,7 +11,13 @@ class MLP(nn.Module):
     input_size : int
         Number of input parameters
     output_size : int
-        Number of 
+        Number of output values
+    hidden_layer : int
+        Number of hidden layer in neural network
+    activation_fn : object of torch.nn
+        Activation function used in hidden layer neurons
+    neurons_per_layer : int
+        Number of neuron in each hidden layer
 
     Returns
     -------
@@ -18,14 +25,28 @@ class MLP(nn.Module):
         Pytorch model of sequentialy stacked layers and activation functions
     """
 
-    def __init__(self,input_size:int,output_size:int) -> None:
+    def __init__(self,input_size:int,output_size:int, hidden_layer_total=2, activation_fn=nn.ReLU(), neurons_per_layer=16) -> None:
         super().__init__()
-        self.linear_relu_stack=nn.Sequential(
-            nn.Linear(input_size,16),
-            nn.ReLU(),
-            nn.Linear(16,output_size),
-            nn.Tanh(),
-        )
+        layers=OrderedDict()
+
+        # collect layers
+        for layer_index in range(1,hidden_layer_total+1):
+            if layer_index==1:
+                # add first hidden layer
+                layers[f"hl_{layer_index}"]=nn.Linear(input_size,neurons_per_layer)
+                layers[f"hl_{layer_index}_activation"]=activation_fn
+                continue
+            # add additional layers
+            layers[f"hl_{layer_index}"]=nn.Linear(neurons_per_layer,neurons_per_layer)
+            layers[f"hl_{layer_index}_activation"]=activation_fn
+
+        # add output layer
+        layers["output_layer"]=nn.Linear(neurons_per_layer,output_size)
+        layers["output_layer_activation"]=nn.Tanh()
+
+        # build mlp
+        self.linear_relu_stack=nn.Sequential(layers)
+
 
     def forward(self,x):
         """
