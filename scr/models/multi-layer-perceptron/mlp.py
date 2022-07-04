@@ -25,7 +25,7 @@ class MLP(nn.Module):
         Pytorch model of sequentialy stacked layers and activation functions
     """
 
-    def __init__(self,input_size:int,output_size:int, hidden_layer_total=2, activation_fn=nn.ReLU(), neurons_per_layer=16) -> None:
+    def __init__(self,input_size,output_size, hidden_layer_total=2, activation_fn=nn.ReLU(), neurons_per_layer=16,**kwargs) -> None:
         super().__init__()
         layers=OrderedDict()
 
@@ -46,6 +46,8 @@ class MLP(nn.Module):
 
         # build mlp
         self.linear_relu_stack=nn.Sequential(layers)
+
+        # Get cpu or gpu device for training.
 
 
     def forward(self,x):
