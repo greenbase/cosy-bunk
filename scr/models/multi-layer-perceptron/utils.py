@@ -3,6 +3,7 @@ import torch
 from torch.nn import L1Loss
 import torch.utils.data as tud
 import constants as const
+import numpy as np
 
 loss_fn = L1Loss(reduction="mean")
 
@@ -50,27 +51,25 @@ def test(dataloader,model):
 
             loss_sum += loss_fn(predictions, joint_coordinates).item()
 
+            # convert prediction and target tensors to numpy arrays
+            predictions_array=predictions.detach().cpu().numpy()
+            joint_coordinates_array=joint_coordinates.detach().cpu().numpy()
+            
+            # rescale prediction values back to mm
+            predictions_mm=const.SCALER.inverse_transform(predictions_array)
+            joint_coordinates_mm=const.SCALER.inverse_transform(joint_coordinates_array)
+            
             # reshape predictions accordingly to coordinate sets
             # Joints x num_of_coordinates
             predictions=predictions.reshape((16,3))  
             joint_coordinates=joint_coordinates.reshape((16,3))
 
-            # convert prediction and target tensors to numpy arrays
-            predictions_array=predictions.detach().cpu().numpy()
-            joint_coordinates_array=joint_coordinates.detach().cpu().numpy()
-            
-            # TODO use scaler to rescale
-            # rescale prediction values back to mm
-            # predictions_mm=const.SCALER.inverse_transform(predictions_array)
-            # joint_coordinates_mm=const.SCALER.inverse_transform(joint_coordinates_array)
-
-            # calculate distance between predicted joint positions and target
-            # positions
-            # TODO use mm arrays
-            distances=euclidean_distance(predictions, joint_coordinates)
+            # calculate euclidean distance between predicted joint positions
+            # and target positions
+            distances=np.linalg.norm(predictions_mm - joint_coordinates_mm,axis=1)
 
             # check if any joint is out of tolerance, i.e. sleeping pos. incorrect
-            if torch.all(distances<15):  # Unit: mm
+            if np.all(distances<15):  # Unit: mm
                 positions_correct_count+=1
     
     accuracy = positions_correct_count / samples_total

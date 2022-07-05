@@ -6,6 +6,10 @@ import json
 
 import optuna
 
+# Datascaler class must be available via __main__.Datascaler
+# Therefor import it in main.py
+from utility import DataScaler  
+
 import constants as const
 from objective import Objective
 

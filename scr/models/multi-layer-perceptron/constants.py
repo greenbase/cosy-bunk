@@ -1,26 +1,21 @@
 import torch.cuda
-import torch.utils.data as tud
 from sleeping_position_dataset import SleepingPositionDataset
 import pickle
 import os
 import sys
 from pathlib import Path
 import importlib
-
 os.chdir(Path(__file__).parent)
 sys.path.append(os.path.realpath("..\.."))
 from config.definitions import ROOT_DIR
 
-# sys.path.append(os.path.realpath((ROOT_DIR /"scr/data/").as_posix()))
-# foo=importlib.import_module("preprocess-raw-data")
-# DataScaler=getattr(foo,"DataScaler")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # load scaler for joint position data
-#_PATH_POSITION_DATA_SCALER=ROOT_DIR / "data/processed/out_scaler.pkl"
-#with open(_PATH_POSITION_DATA_SCALER, "rb") as file_scaler:
-#    SCALER=pickle.load(file_scaler)
+_PATH_POSITION_DATA_SCALER=ROOT_DIR / "data/processed/out_scaler.pkl"
+with open(_PATH_POSITION_DATA_SCALER, "rb") as file_scaler:
+   SCALER=pickle.load(file_scaler)
 
 # load dataset
 _PATH_FORCES_DATA=ROOT_DIR / "data/processed/inp.csv"

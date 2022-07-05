@@ -32,7 +32,7 @@ class DataScaler:
         """
         return self._normalizer.transform(data)
 
-    def invert_transform(self, data):
+    def inverse_transform(self, data):
         """Reverts normalisation.
 
         Args:
