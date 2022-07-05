@@ -12,7 +12,7 @@ from objective import Objective
 def main():
     # perform hyperparameter tuning
     study=optuna.create_study()
-    study.optimize(Objective(), n_trials=10)
+    study.optimize(Objective(), n_trials=2)
 
     # save best hyperparameters and best model
     with open(const.PATH_NEURAL_NET_PARAMETERS,"w",encoding="utf-8") as file:

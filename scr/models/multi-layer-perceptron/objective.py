@@ -12,11 +12,11 @@ class Objective(object):
         # suggest hyperparameters
         structure_parameters={
             "hidden_layer_total" : trial.suggest_int("hidden_layer_total",2,6),
-            "activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh]),
+            #"activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh()0]),
             "neurons_per_layer" : trial.suggest_int("neurons_per_layer",16,128)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",5000,10000, step=5000),
+            "epochs_total": trial.suggest_int("epochs_total",5,10, step=5),
             "batch_size_train": trial.suggest_int("batch_size_train",50,400),
             "learning_rate": trial.suggest_float("learning_rate",0.001,0.1)
         }
@@ -51,8 +51,8 @@ class Objective(object):
         loss, accuracy = test(validation_dataloader,model)
 
         # save new model if accuracy has improved
-        if accuracy>self.old_accuracy:
-            with open(const.PATH_NEURAL_NET,"rb") as model_file:
+        if accuracy>self.accuracy_old:
+            with open(const.PATH_NEURAL_NET,"wb") as model_file:
                 pickle.dump(model,model_file)
 
         self.accuracy_old=accuracy

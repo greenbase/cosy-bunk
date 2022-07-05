@@ -52,8 +52,8 @@ def test(dataloader,model):
 
             # reshape predictions accordingly to coordinate sets
             # Joints x num_of_coordinates
-            predictions=predictions.reshape((16,2))  
-            joint_coordinates=joint_coordinates.reshape((16,2))
+            predictions=predictions.reshape((16,3))  
+            joint_coordinates=joint_coordinates.reshape((16,3))
 
             # convert prediction and target tensors to numpy arrays
             predictions_array=predictions.detach().cpu().numpy()
@@ -66,7 +66,8 @@ def test(dataloader,model):
 
             # calculate distance between predicted joint positions and target
             # positions
-            distances=euclidean_distance(predictions_mm, joint_coordinates_mm)
+            # TODO use mm arrays
+            distances=euclidean_distance(predictions, joint_coordinates)
 
             # check if any joint is out of tolerance, i.e. sleeping pos. incorrect
             if torch.all(distances<15):  # Unit: mm
@@ -74,7 +75,7 @@ def test(dataloader,model):
     
     accuracy = positions_correct_count / samples_total
     loss_avg = loss_sum / samples_total
-    print(f"Test Error: \n Avg loss: {loss_avg:>8f} Accuracy: {accuracy*100:>2f}%\n")
+    print(f"Test Error:\nAvg loss: {loss_avg:>8f} Accuracy: {accuracy*100:>.2f}%\n")
     return loss_avg, accuracy
 
 def get_data_loaders(dataset,batch_size_train=32):
