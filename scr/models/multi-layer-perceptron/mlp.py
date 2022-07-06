@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from torch import relu
 import torch.nn as nn
 
 class MLP(nn.Module):

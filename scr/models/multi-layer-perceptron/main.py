@@ -1,6 +1,11 @@
 """
 
 """
+import os
+import sys
+from pathlib import Path
+os.chdir(Path(__file__).parent)
+sys.path.append(os.path.realpath("..\.."))
 
 import json
 

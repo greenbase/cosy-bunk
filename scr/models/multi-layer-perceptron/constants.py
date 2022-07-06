@@ -4,7 +4,6 @@ import pickle
 import os
 import sys
 from pathlib import Path
-import importlib
 os.chdir(Path(__file__).parent)
 sys.path.append(os.path.realpath("..\.."))
 from config.definitions import ROOT_DIR
