@@ -61,8 +61,8 @@ def test(dataloader,model):
             
             # reshape predictions accordingly to coordinate sets
             # Joints x num_of_coordinates
-            predictions=predictions.reshape((16,3))  
-            joint_coordinates=joint_coordinates.reshape((16,3))
+            predictions=predictions.reshape((17,2))  
+            joint_coordinates=joint_coordinates.reshape((17,2))
 
             # calculate euclidean distance between predicted joint positions
             # and target positions
