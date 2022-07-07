@@ -3,10 +3,11 @@ import torch
 from mlp import MLP
 from utils import train, test, get_data_loaders
 import constants as const
+import csv
 
 class Objective(object):
     def __init__(self):
-        self.accuracy_old=0
+        self.accuracy_max=0
 
     def __call__(self, trial):
         # suggest hyperparameters
@@ -16,7 +17,7 @@ class Objective(object):
             "neurons_per_layer" : trial.suggest_int("neurons_per_layer",16,128)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",500,1000, step=500),
+            "epochs_total": trial.suggest_int("epochs_total",5,10, step=5),
             "batch_size_train": trial.suggest_int("batch_size_train",50,400),
             "learning_rate": trial.suggest_float("learning_rate",0.001,0.1)
         }
@@ -32,6 +33,12 @@ class Objective(object):
         # set up data loaders
         training_dataloader, validation_dataloader, test_dataloader=get_data_loaders(const.DATASET,training_parameters["batch_size_train"])
 
+        # set up csv file for metrics of new model to be trained
+        fieldnames=["epoch","loss","accuracy"]
+        with open("model_metrics.csv","w",newline="") as csv_file:
+            csv_writer=csv.DictWriter(csv_file,fieldnames)
+            csv_writer.writeheader()
+
         # train model
         epochs_total=training_parameters["epochs_total"]
         for epoch_count in range(1,epochs_total+1):
@@ -39,19 +46,19 @@ class Objective(object):
             train(training_dataloader, model, optimizer)
             lr_scheduler.step()
             # evaluate model every x epochs or after the last training epoch
-            if epoch_count % 50==0 | epoch_count==epochs_total:
-                # TODO track training data loss and accuracy
-                loss_training, accuracy_training= test(training_dataloader, model)
-                loss_validation,accuracy_validation = test(validation_dataloader,model)
-                # losses.append((epoch_count,loss))
-                # accuracies.append((epoch_count,accuracy))
+            if epoch_count % 1==0 or epoch_count==epochs_total:
+                metrics={"epoch": epoch_count}
+                metrics["loss"], metrics["accuracy"] = test(validation_dataloader,model)
 
                 # write metrics to csv
+                with open("model_metrics.csv","a",newline="") as csv_file:
+                    csv_writer=csv.DictWriter(csv_file,fieldnames)
+                    csv_writer.writerow(metrics)       
+
         # save new model if accuracy has improved
-        if accuracy_validation>self.accuracy_old:
+        if metrics["accuracy"]>self.accuracy_max:
+            self.accuracy_max=metrics["accuracy"]
             with open(const.PATH_NEURAL_NET,"wb") as model_file:
                 pickle.dump(model,model_file)
 
-        self.accuracy_old=accuracy_validation
-
-        return accuracy_validation
+        return metrics["accuracy"]
