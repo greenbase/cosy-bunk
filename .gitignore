@@ -1,4 +1,6 @@
-data/**
-*.pyc
 .vscode/launch.json
 models/**
+data/processed/**
+data/interim/**
+data/external/**
+*.pyc
