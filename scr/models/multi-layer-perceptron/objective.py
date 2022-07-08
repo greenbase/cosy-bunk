@@ -14,12 +14,12 @@ class Objective(object):
         structure_parameters={
             "hidden_layer_total" : trial.suggest_int("hidden_layer_total",2,6),
             #"activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh()0]),
-            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",16,128)
+            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",50,150,50)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",5,10, step=5),
-            "batch_size_train": trial.suggest_int("batch_size_train",50,400),
-            "learning_rate": trial.suggest_float("learning_rate",0.001,0.1)
+            "epochs_total": trial.suggest_int("epochs_total",5000,10000,),
+            "batch_size_train": trial.suggest_int("batch_size_train",100,200,50),
+            "learning_rate": trial.suggest_float("learning_rate",0.02,0.04)
         }
 
         # set up model
@@ -28,7 +28,7 @@ class Objective(object):
         print(model)
 
         optimizer = torch.optim.SGD(model.parameters(), lr=training_parameters["learning_rate"])
-        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+        # lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 
         # set up data loaders
         training_dataloader, validation_dataloader, test_dataloader=get_data_loaders(const.DATASET,training_parameters["batch_size_train"])
@@ -44,9 +44,9 @@ class Objective(object):
         for epoch_count in range(1,epochs_total+1):
             print(f"Epoch {epoch_count}\n----------------------------")
             train(training_dataloader, model, optimizer)
-            lr_scheduler.step()
+            # lr_scheduler.step()
             # evaluate model every x epochs or after the last training epoch
-            if epoch_count % 1==0 or epoch_count==epochs_total:
+            if epoch_count % 100==0 or epoch_count==epochs_total:
                 metrics={"epoch": epoch_count}
                 metrics["loss"], metrics["accuracy"] = test(validation_dataloader,model)
 
