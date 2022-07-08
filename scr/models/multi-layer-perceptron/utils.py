@@ -35,7 +35,6 @@ def test(dataloader,model):
     tuple
         (average loss per sample, accuracy of correct positions)
     """
-    euclidean_distance=torch.nn.PairwiseDistance(p=2)
     positions_correct_count=0
     samples_total = len(dataloader)
     model.eval()
@@ -45,7 +44,6 @@ def test(dataloader,model):
         for slat_forces, joint_coordinates in dataloader:
             slat_forces = slat_forces.to(const.DEVICE)
             joint_coordinates = joint_coordinates.to(const.DEVICE)
-
             predictions=model(slat_forces)  # predict single sample
 
             loss_sum += loss_fn(predictions, joint_coordinates).item()
