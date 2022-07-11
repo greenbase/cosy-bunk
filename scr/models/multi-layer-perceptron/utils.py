@@ -92,7 +92,8 @@ def get_data_loaders(dataset,batch_size_train=32):
     """
     # set sizes for data split
     # training data 70% of all data; validation and test data 15% each
-    training_data_length    = int(len(dataset)*0.7)  
+    # TODO make calulation of lenght robust for even and odd numbers
+    training_data_length    = int(len(dataset)*0.7)+1  
     validation_data_length  = int((len(dataset)-training_data_length)/2)
     test_data_length        = validation_data_length
 
