@@ -24,7 +24,7 @@ def train(dataloader, model, optimizer):
     
         if batch % 10 == 0:
             loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 def test(dataloader,model):
     """
@@ -71,7 +71,7 @@ def test(dataloader,model):
     
     accuracy = positions_correct_count / samples_total
     loss_avg = loss_sum / samples_total
-    print(f"Test Error:\nAvg loss: {loss_avg:>8f} Accuracy: {accuracy*100:>.2f}%\n")
+    #print(f"Test Error:\nAvg loss: {loss_avg:>8f} Accuracy: {accuracy*100:>.2f}%\n")
     return loss_avg, accuracy
 
 def get_data_loaders(dataset,batch_size_train=32):
