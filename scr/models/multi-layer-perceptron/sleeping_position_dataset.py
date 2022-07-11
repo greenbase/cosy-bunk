@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 class SleepingPositionDataset(Dataset):
     def __init__(self, slat_forces_file, joint_positions_file):
-        self.joint_positions=pd.read_csv(joint_positions_file,index_col=["timestamp"])
+        self.joint_positions=pd.read_csv(joint_positions_file,)
         self.slat_forces=pd.read_csv(slat_forces_file)
 
     def __len__(self):
