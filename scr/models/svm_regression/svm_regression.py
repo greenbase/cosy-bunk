@@ -7,6 +7,10 @@ import numpy as np
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
 import pickle
+import os 
+import sys
+os.chdir(Path(__file__).parent)
+sys.path.append(os.path.realpath("..\..\.."))
 from scr.utility import DataScaler, draw_position_and_image, save_metrics
 
 
