@@ -66,7 +66,7 @@ def test(dataloader,model):
             distances=np.linalg.norm(predictions_mm - joint_coordinates_mm,axis=1)
 
             # check if any joint is out of tolerance, i.e. sleeping pos. incorrect
-            if np.all(distances<15):  # Unit: mm
+            if np.all(distances<50):  # Unit: mm
                 positions_correct_count+=1
     
     accuracy = positions_correct_count / samples_total
