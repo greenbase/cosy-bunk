@@ -20,8 +20,8 @@ from objective import Objective
 
 def main():
     # perform hyperparameter tuning
-    study=optuna.create_study()
-    study.optimize(Objective(), n_trials=2)
+    study=optuna.create_study(direction="maximize")
+    study.optimize(Objective(), n_trials=1)
 
     # save best hyperparameters and best model
     with open(const.PATH_NEURAL_NET_PARAMETERS,"w",encoding="utf-8") as file:
