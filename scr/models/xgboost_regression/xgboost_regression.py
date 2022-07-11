@@ -1,13 +1,13 @@
 """
-This script does a support vector machine regression on the preprocessed joint data.
+This script does a XGBoost regression on the preprocessed joint data.
 """
 from pathlib import Path
 import pandas as pd
 import numpy as np
-from sklearn.svm import SVR
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 import pickle
-import os 
+import os
 import sys
 os.chdir(Path(__file__).parent)
 sys.path.append(os.path.realpath("..\..\.."))
@@ -17,7 +17,7 @@ from scr.utility import DataScaler, draw_position_and_image, save_metrics
 def gen_regressors(inp, out):
     regressors = []
     for col_out in out:
-        regressor = SVR(kernel='rbf')
+        regressor = GradientBoostingRegressor(random_state=0)
         regressor.fit(inp, out[col_out])
         regressors.append(regressor)
     return regressors
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     OUT_DATA_PATH = Path("../../../data/processed/out.csv")
     OUT_SCALER_PATH = Path("../../../data/processed/out_scaler.pkl")
     IMAGE_PATH = Path('../../../data/raw/frames_kinect/')
-    RESULT_PATH = Path("../../../reports/svm_regression/")
+    RESULT_PATH = Path("../../../reports/xgboost_regression/")
 
     OUT_SCALER = pickle.load(open(OUT_SCALER_PATH, "rb"))
 

@@ -91,7 +91,10 @@ def draw_position_and_image(targets, preds, time_stamps, image_path, result_path
                 time_stamp = time_stamps[int((idx + ax_idx - 1) / 2)]
                 file_name = 'frame-body-{}.png'.format(time_stamp)
                 im = plt.imread(image_path.joinpath(file_name))
-                ax.imshow(np.flip(im[50:, 400:750], axis=1))
+                upper_start = int(0.07*np.shape(im)[0])
+                left_start = int(0.35*np.shape(im)[1])
+                right_end = int(0.65*np.shape(im)[1])
+                ax.imshow(np.flip(im[upper_start:, left_start:right_end], axis=1))
                 ax.axis('off')
                 ax.set_title(time_stamp, size=9)
 

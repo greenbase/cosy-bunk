@@ -3,4 +3,5 @@ models/**
 data/processed/**
 data/interim/**
 data/external/**
+data/raw/**
 *.pyc

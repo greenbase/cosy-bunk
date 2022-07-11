@@ -1,0 +1,2 @@
+Mean Sqared Error: 2480.073131836341
+Mean Absolute Error: 23.83720416548074

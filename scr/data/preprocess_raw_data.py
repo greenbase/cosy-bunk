@@ -9,19 +9,19 @@ equal as well as the order of files within each folder must match the order in t
 For details on the table of data build see references>data>explanation-column-names.md
 """
 
-# make module relative to scr importable
+
 import os
 import sys
-from pathlib import Path
-os.chdir(Path(__file__).parent)
-sys.path.append(os.path.realpath("..\.."))
 
 import json
 import pandas as pd
 import numpy as np
 import pickle
 from pathlib import Path
-from utility import DataScaler
+
+os.chdir(Path(__file__).parent)
+sys.path.append(os.path.realpath("..\.."))
+from scr.utility import DataScaler
 
 
 def load_inp(path):
