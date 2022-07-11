@@ -12,14 +12,14 @@ class Objective(object):
     def __call__(self, trial):
         # suggest hyperparameters
         structure_parameters={
-            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",2,6),
+            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",1,4),
             #"activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh()0]),
-            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",50,150,50)
+            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",70,100)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",5000,10000,),
-            "batch_size_train": trial.suggest_int("batch_size_train",100,200,50),
-            "learning_rate": trial.suggest_float("learning_rate",0.02,0.04)
+            "epochs_total": trial.suggest_int("epochs_total",10000,10000,5000),
+            "batch_size_train": trial.suggest_int("batch_size_train",50,150,20),
+            "learning_rate": trial.suggest_float("learning_rate",0.05,0.1)
         }
 
         # set up model
@@ -42,7 +42,7 @@ class Objective(object):
         # train model
         epochs_total=training_parameters["epochs_total"]
         for epoch_count in range(1,epochs_total+1):
-            print(f"Epoch {epoch_count}\n----------------------------")
+            #print(f"Epoch {epoch_count}\n----------------------------")
             train(training_dataloader, model, optimizer)
             # lr_scheduler.step()
             # evaluate model every x epochs or after the last training epoch
