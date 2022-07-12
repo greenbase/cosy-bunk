@@ -15,7 +15,11 @@ print(f"Using device: {DEVICE}")
 # load scaler for joint position data
 _PATH_POSITION_DATA_SCALER=ROOT_DIR / "data/processed/out_scaler.pkl"
 with open(_PATH_POSITION_DATA_SCALER, "rb") as file_scaler:
-   SCALER=pickle.load(file_scaler)
+   POSITION_SCALER=pickle.load(file_scaler)
+
+_PATH_FORCES_DATA_SCALER=ROOT_DIR / "data/processed/inp_scaler.pkl"
+with open(_PATH_FORCES_DATA_SCALER,"rb") as file_scaler:
+   FORCES_SCALER=pickle.load(file_scaler)
 
 # load dataset
 _PATH_FORCES_DATA=ROOT_DIR / "data/processed/inp.csv"

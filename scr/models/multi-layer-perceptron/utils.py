@@ -53,8 +53,8 @@ def test(dataloader,model):
             joint_coordinates_array=joint_coordinates.detach().cpu().numpy()
             
             # rescale prediction values back to mm
-            predictions_mm=const.SCALER.inverse_transform(predictions_array)
-            joint_coordinates_mm=const.SCALER.inverse_transform(joint_coordinates_array)
+            predictions_mm=const.POSITION_SCALER.inverse_transform(predictions_array)
+            joint_coordinates_mm=const.POSITION_SCALER.inverse_transform(joint_coordinates_array)
             
             # reshape predictions accordingly to coordinate sets
             # Joints x num_of_coordinates
