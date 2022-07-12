@@ -10,6 +10,7 @@ from config.definitions import ROOT_DIR
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {DEVICE}")
 
 # load scaler for joint position data
 _PATH_POSITION_DATA_SCALER=ROOT_DIR / "data/processed/out_scaler.pkl"
