@@ -1,4 +1,5 @@
 import pickle
+import optuna
 import torch
 from mlp import MLP
 from utils import train, test, get_data_loaders
@@ -12,14 +13,14 @@ class Objective(object):
     def __call__(self, trial):
         # suggest hyperparameters
         structure_parameters={
-            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",1,4),
+            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",1,6),
             #"activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh()0]),
-            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",70,100)
+            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",20,200,20)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",10000,10000,5000),
-            "batch_size_train": trial.suggest_int("batch_size_train",50,150,20),
-            "learning_rate": trial.suggest_float("learning_rate",0.05,0.1)
+            "epochs_total": trial.suggest_int("epochs_total",4000,4000,5000),
+            "batch_size_train": trial.suggest_int("batch_size_train",10,150,20),
+            "learning_rate": trial.suggest_float("learning_rate",0.01,0.2)
         }
 
         # set up model
@@ -49,6 +50,11 @@ class Objective(object):
             if epoch_count % 100==0 or epoch_count==epochs_total:
                 metrics={"epoch": epoch_count}
                 metrics["loss"], metrics["accuracy"] = test(validation_dataloader,model)
+
+                # prune trial if loss 
+                trial.report(metrics["loss"],epoch_count-1)
+                if trial.should_prune():
+                    raise optuna.TrialPruned()
 
                 # write metrics to csv
                 with open("model_metrics.csv","a",newline="") as csv_file:
