@@ -156,8 +156,8 @@ def get_metrics(predictions, targets, scaler):
 
     for sample_prediction, sample_target in zip(predictions,targets):
         # rescale values to Millimeters
-        sample_prediction_mm=scaler.invert_transform(sample_prediction.reshape((1,-1)))
-        sample_target_mm = scaler.invert_transform(sample_target.reshape((1,-1)))
+        sample_prediction_mm=scaler.inverse_transform(sample_prediction.reshape((1,-1)))
+        sample_target_mm = scaler.inverse_transform(sample_target.reshape((1,-1)))
 
         # reshape sample arrays. New shape: (Joints x joint-coordinates)
         sample_prediction_mm=sample_prediction_mm.reshape((17,2))
