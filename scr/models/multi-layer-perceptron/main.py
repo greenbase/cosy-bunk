@@ -19,10 +19,18 @@ from utility import DataScaler
 import constants as const
 from objective import Objective
 
+starting_point={
+    "hidden_layer_total":3,
+    "neurons_per_layer":60,
+    "batch_size_train":30,
+    "learning_rate":0.3
+}
+
 def main():
     # perform hyperparameter tuning
-    study=optuna.create_study(direction="maximize",pruner=ThresholdPruner(upper=0.04,n_warmup_steps=2000))
-    study.optimize(Objective(), n_trials=20)
+    study=optuna.create_study(direction="maximize",pruner=ThresholdPruner(upper=0.1,n_warmup_steps=199))
+    study.enqueue_trial(starting_point)
+    study.optimize(Objective(), n_trials=5)
 
     # save best hyperparameters and best model
     with open(const.PATH_NEURAL_NET_PARAMETERS,"w",encoding="utf-8") as file:
