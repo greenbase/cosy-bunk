@@ -1,3 +1,9 @@
+"""
+Abbreviations:
+mm  Millimeter
+avg Average
+"""
+from turtle import distance
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
@@ -123,3 +129,52 @@ def save_metrics(targets, preds, path):
     with open(path.joinpath('metrics.txt'), 'w') as f:
         f.write("Mean Sqared Error: {}\n".format(mse))
         f.write("Mean Absolute Error: {}\n".format(mae))
+
+def get_metrics(predictions, targets, scaler):
+    """
+    Calculates the proportion of sleeping positions predicted correctly within tolerance.
+    
+    Parameters
+    ----------
+    predictions : array
+        Array of predicted joint coordinates. Shape: (Testsamples x 34)
+    targets : array
+        Array of measured joint coordinates.
+    scaler : Instance of DataScaler
+        Scaler previously used to scale data. Used here to perform inverse scaling.
+    
+    Returns
+    -------
+    loss_avg : float
+        Average error for a single coordinate prediction
+    accuracy : float
+        Proportion of samples for which all predicted joint positions fall into specified radial tolerance area around the target joint.
+    """
+    distance_sum = 0
+    positions_correct_count = 0
+    SAMPLES_TOTAL = len(predictions)
+
+    for sample_prediction, sample_target in zip(predictions,targets):
+        # rescale values to Millimeters
+        sample_prediction_mm=scaler.invert_transform(sample_prediction.reshape((1,-1)))
+        sample_target_mm = scaler.invert_transform(sample_target.reshape((1,-1)))
+
+        # reshape sample arrays. New shape: (Joints x joint-coordinates)
+        sample_prediction_mm=sample_prediction_mm.reshape((17,2))
+        sample_target_mm=sample_target_mm.reshape((17,2))
+
+        # calculate euclidean distance between predicted joint positions and
+        # target positions
+        sample_distances_mm=np.linalg.norm(sample_prediction_mm - sample_target_mm,axis=1)
+        distance_sum_mm+=np.sum(sample_distances_mm)
+
+        # check if any joint is out of tolerance and count No. of sleeping
+        # positions for which all joint fall within tolerance area
+        distance_tolerance_mm = 50
+        if np.all(sample_distances_mm < distance_tolerance_mm):
+            positions_correct_count+=1
+
+    accuracy = positions_correct_count / SAMPLES_TOTAL
+    distance_mm_avg = distance_sum_mm / (len(sample_distances_mm)*SAMPLES_TOTAL)
+
+    return distance_mm_avg, accuracy
