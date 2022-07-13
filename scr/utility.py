@@ -150,7 +150,7 @@ def get_metrics(predictions, targets, scaler):
     accuracy : float
         Proportion of samples for which all predicted joint positions fall into specified radial tolerance area around the target joint.
     """
-    distance_sum = 0
+    distance_sum_mm = 0
     positions_correct_count = 0
     SAMPLES_TOTAL = len(predictions)
 
