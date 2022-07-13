@@ -48,20 +48,26 @@ def test(dataloader,model):
     samples_total = len(dataloader)
     model.eval()
     loss_sum = 0
+    predictions_array=np.zeros((len(dataloader),34))
+    joint_coordinates_array=np.zeros((len(dataloader),34))
     # make predictions for each test sample
     with torch.no_grad():
-        for slat_forces, joint_coordinates in dataloader:
+        for sample_index, (slat_forces, joint_coordinates) in enumerate(dataloader):
             slat_forces = slat_forces.to(const.DEVICE)
             joint_coordinates = joint_coordinates.to(const.DEVICE)
             predictions=model(slat_forces)  # predict single sample
 
-            loss_sum += loss_fn(predictions, joint_coordinates).item()
+
+            #loss_sum += loss_fn(predictions, joint_coordinates).item()
 
             # convert prediction and target tensors to numpy arrays
-            predictions_array=predictions.detach().cpu().numpy()
-            joint_coordinates_array=joint_coordinates.detach().cpu().numpy()
+            predictions=predictions.detach().cpu().numpy()
+            joint_coordinates=joint_coordinates.detach().cpu().numpy()
+
+            predictions_array[sample_index]=predictions
+            joint_coordinates_array[sample_index]=joint_coordinates
             
-            distance_avg_mm, accuracy=get_metrics(predictions_array,joint_coordinates_array,const.POSITION_SCALER)
+        distance_avg_mm, accuracy=get_metrics(predictions_array,joint_coordinates_array,const.POSITION_SCALER)
 
             # rescale prediction values back to mm
     #         predictions_mm=const.POSITION_SCALER.inverse_transform(predictions_array)

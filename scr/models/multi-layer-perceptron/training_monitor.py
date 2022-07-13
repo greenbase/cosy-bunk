@@ -33,9 +33,9 @@ def update_accuracy(n):
 )
 def update_loss(n):
     with open("model_metrics.csv","r") as csv_file:
-        df=pd.read_csv(csv_file,header=0,usecols=["epoch","loss"],index_col="epoch")
+        df=pd.read_csv(csv_file,header=0,usecols=["epoch","distance_avg_mm"],index_col="epoch")
     assert df.shape[1]==1, f"Shape of loss df is {df.shape}"
-    fig=px.line(df,y="loss",)
+    fig=px.line(df,y="distance_avg_mm",)
     # fig.update_layout(margin=dict(pad=10))
     return fig
 
