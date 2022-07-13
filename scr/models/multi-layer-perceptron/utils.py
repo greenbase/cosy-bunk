@@ -4,6 +4,15 @@ import torch.utils.data as tud
 import constants as const
 import numpy as np
 
+# make modules from scr importable
+import os
+import sys
+from pathlib import Path
+os.chdir(Path(__file__).parent)
+sys.path.append(os.path.realpath("..\.."))
+
+from utility import get_metrics
+
 loss_fn = L1Loss(reduction="mean")
 
 def train(dataloader, model, optimizer):
@@ -52,27 +61,29 @@ def test(dataloader,model):
             predictions_array=predictions.detach().cpu().numpy()
             joint_coordinates_array=joint_coordinates.detach().cpu().numpy()
             
+            distance_avg_mm, accuracy=get_metrics(predictions_array,joint_coordinates_array,const.POSITION_SCALER)
+
             # rescale prediction values back to mm
-            predictions_mm=const.POSITION_SCALER.inverse_transform(predictions_array)
-            joint_coordinates_mm=const.POSITION_SCALER.inverse_transform(joint_coordinates_array)
+    #         predictions_mm=const.POSITION_SCALER.inverse_transform(predictions_array)
+    #         joint_coordinates_mm=const.POSITION_SCALER.inverse_transform(joint_coordinates_array)
             
-            # reshape predictions accordingly to coordinate sets
-            # Joints x num_of_coordinates
-            predictions=predictions.reshape((17,2))  
-            joint_coordinates=joint_coordinates.reshape((17,2))
+    #         # reshape predictions accordingly to coordinate sets
+    #         # Joints x num_of_coordinates
+    #         predictions=predictions.reshape((17,2))  
+    #         joint_coordinates=joint_coordinates.reshape((17,2))
 
-            # calculate euclidean distance between predicted joint positions
-            # and target positions
-            distances=np.linalg.norm(predictions_mm - joint_coordinates_mm,axis=1)
+    #         # calculate euclidean distance between predicted joint positions
+    #         # and target positions
+    #         distances=np.linalg.norm(predictions_mm - joint_coordinates_mm,axis=1)
 
-            # check if any joint is out of tolerance, i.e. sleeping pos. incorrect
-            if np.all(distances<50):  # Unit: mm
-                positions_correct_count+=1
+    #         # check if any joint is out of tolerance, i.e. sleeping pos. incorrect
+    #         if np.all(distances<50):  # Unit: mm
+    #             positions_correct_count+=1
     
-    accuracy = positions_correct_count / samples_total
-    loss_avg = loss_sum / samples_total
+    # accuracy = positions_correct_count / samples_total
+    # loss_avg = loss_sum / samples_total
     #print(f"Test Error:\nAvg loss: {loss_avg:>8f} Accuracy: {accuracy*100:>.2f}%\n")
-    return loss_avg, accuracy
+    return distance_avg_mm, accuracy
 
 def get_data_loaders(dataset,batch_size_train=32):
     """

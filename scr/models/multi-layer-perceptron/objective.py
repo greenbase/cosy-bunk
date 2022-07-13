@@ -37,7 +37,7 @@ class Objective(object):
         training_dataloader, validation_dataloader, test_dataloader=get_data_loaders(const.DATASET,training_parameters["batch_size_train"])
 
         # set up csv file for metrics of new model to be trained
-        fieldnames=["epoch","loss","accuracy"]
+        fieldnames=["epoch","distance_avg_mm","accuracy"]
         with open("model_metrics.csv","w",newline="") as csv_file:
             csv_writer=csv.DictWriter(csv_file,fieldnames)
             csv_writer.writeheader()
@@ -52,10 +52,10 @@ class Objective(object):
             # evaluate model every x epochs or after the last training epoch
             if epoch_count % 100==0 or epoch_count==epochs_total:
                 metrics={"epoch": epoch_count}
-                metrics["loss"], metrics["accuracy"] = test(validation_dataloader,model)
+                metrics["distance_avg_mm"], metrics["accuracy"] = test(validation_dataloader,model)
 
                 # prune trial if loss 
-                trial.report(metrics["loss"],epoch_count-1)
+                trial.report(metrics["distance_avg_mm"],epoch_count-1)
                 if trial.should_prune():
                     raise optuna.TrialPruned()
 
