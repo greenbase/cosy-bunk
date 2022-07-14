@@ -13,14 +13,14 @@ class Objective(object):
     def __call__(self, trial):
         # suggest hyperparameters
         structure_parameters={
-            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",2,5),
+            "hidden_layer_total" : trial.suggest_int("hidden_layer_total",3,5),
             #"activation_fn" : trial.suggest_categorical("activation_fn",[torch.nn.ReLU(),torch.nn.Tanh()0]),
-            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",10,200,5)
+            "neurons_per_layer" : trial.suggest_int("neurons_per_layer",50,70,5)
         }
         training_parameters={
             "epochs_total": trial.suggest_int("epochs_total",2000,2000,5000),
-            "batch_size_train": trial.suggest_int("batch_size_train",10,70,10),
-            "learning_rate": trial.suggest_float("learning_rate",0.1,0.3)
+            "batch_size_train": trial.suggest_int("batch_size_train",2,20,2),
+            "learning_rate": trial.suggest_float("learning_rate",0.2,1.2)
         }
         print(f"Trial {trial.number}\n------------")
         print(trial.params)
@@ -31,7 +31,7 @@ class Objective(object):
         print(model)
 
         optimizer = torch.optim.SGD(model.parameters(), lr=training_parameters["learning_rate"])
-        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.999)
+        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
         # set up data loaders
         training_dataloader, validation_dataloader, test_dataloader=get_data_loaders(const.DATASET,training_parameters["batch_size_train"])
