@@ -20,8 +20,8 @@ import pickle
 from pathlib import Path
 
 os.chdir(Path(__file__).parent)
-sys.path.append(os.path.realpath("..\.."))
-from scr.utility import DataScaler
+sys.path.append(os.path.realpath(".."))
+from utility import DataScaler
 
 
 def load_inp(path):

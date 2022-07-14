@@ -1,5 +1,8 @@
+.vscode/launch.json
+models/**
 data/processed/**
 data/interim/**
 data/external/**
 data/raw/**
 *.pyc
+scr/models/multi-layer-perceptron/model_metrics.csv
