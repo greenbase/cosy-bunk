@@ -1,3 +1,9 @@
+"""
+Abbreviations:
+mm  Millimeter
+avg Average
+"""
+from turtle import distance
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
@@ -32,7 +38,7 @@ class DataScaler:
         """
         return self._normalizer.transform(data)
 
-    def invert_transform(self, data):
+    def inverse_transform(self, data):
         """Reverts normalisation.
 
         Args:
@@ -105,7 +111,7 @@ def draw_position_and_image(targets, preds, time_stamps, image_path, result_path
         plt.savefig(result_path.joinpath("predictions_{0}-{1}.png".format(idx, idx + 7)))
 
 
-def save_metrics(targets, preds, path):
+def save_metrics(distance_avg_mm, accuracy, path):
     """Calculates relevant metrics and saves them to txt-file under specified path.
 
     Args:
@@ -117,9 +123,55 @@ def save_metrics(targets, preds, path):
             the order is important and that corresponding x and y coordinate have to be successive.
         path(Path): Absolute or relative path for saving result txt-file.
     """
-    # TODO add metric according to 'model_quality_criteria.md'
-    mse = mean_squared_error(preds, targets)
-    mae = mean_absolute_error(preds, targets)
     with open(path.joinpath('metrics.txt'), 'w') as f:
-        f.write("Mean Sqared Error: {}\n".format(mse))
-        f.write("Mean Absolute Error: {}\n".format(mae))
+        f.write(f"Average joint distance in mm: {distance_avg_mm}\n")
+        f.write(f"Accuracy: {accuracy}\n")
+
+def get_metrics(predictions, targets, scaler):
+    """
+    Calculates the proportion of sleeping positions predicted correctly within tolerance.
+    
+    Parameters
+    ----------
+    predictions : array
+        Array of predicted and scaled joint coordinates. Shape: (Testsamples x 34)
+    targets : array
+        Array of measured and scaled joint coordinates.
+    scaler : Instance of DataScaler
+        Scaler previously used to scale data. Used here to perform inverse scaling.
+    
+    Returns
+    -------
+    loss_avg : float
+        Average error for a single coordinate prediction
+    accuracy : float
+        Proportion of samples for which all predicted joint positions fall into specified radial tolerance area around the target joint.
+    """
+    distance_sum_mm = 0
+    positions_correct_count = 0
+    SAMPLES_TOTAL = len(predictions)
+
+    for sample_prediction, sample_target in zip(predictions,targets):
+        # rescale values to Millimeters
+        sample_prediction_mm=scaler.inverse_transform(sample_prediction.reshape((1,-1)))
+        sample_target_mm = scaler.inverse_transform(sample_target.reshape((1,-1)))
+
+        # reshape sample arrays. New shape: (Joints x joint-coordinates)
+        sample_prediction_mm=sample_prediction_mm.reshape((17,2))
+        sample_target_mm=sample_target_mm.reshape((17,2))
+
+        # calculate euclidean distance between predicted joint positions and
+        # target positions
+        sample_distances_mm=np.linalg.norm(sample_prediction_mm - sample_target_mm,axis=1)
+        distance_sum_mm+=np.sum(sample_distances_mm)
+
+        # check if any joint is out of tolerance and count No. of sleeping
+        # positions for which all joint fall within tolerance area
+        distance_tolerance_mm = 50
+        if np.all(sample_distances_mm < distance_tolerance_mm):
+            positions_correct_count+=1
+
+    accuracy = positions_correct_count / SAMPLES_TOTAL
+    distance_mm_avg = distance_sum_mm / (len(sample_distances_mm)*SAMPLES_TOTAL)
+
+    return distance_mm_avg, accuracy
