@@ -1,2 +1,2 @@
-Mean Sqared Error: 2480.073131836341
-Mean Absolute Error: 23.83720416548074
+Average joint distance in mm: 37.994174603066334
+Accuracy: 0.08598726114649681
