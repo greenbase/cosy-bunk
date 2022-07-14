@@ -23,14 +23,14 @@ starting_point={
     "hidden_layer_total":4,
     "neurons_per_layer":60,
     "batch_size_train":10,
-    "learning_rate":1.2,
+    "learning_rate":0.4,
 }
 
 def main():
     # perform hyperparameter tuning
     study=optuna.create_study(direction="maximize",pruner=ThresholdPruner(upper=24,n_warmup_steps=999))
     study.enqueue_trial(starting_point)
-    study.optimize(Objective(), n_trials=10)
+    study.optimize(Objective(), n_trials=5)
 
     # save best hyperparameters and best model
     with open(const.PATH_NEURAL_NET_PARAMETERS,"w",encoding="utf-8") as file:

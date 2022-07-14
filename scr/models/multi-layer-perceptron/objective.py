@@ -31,7 +31,7 @@ class Objective(object):
         print(model)
 
         optimizer = torch.optim.SGD(model.parameters(), lr=training_parameters["learning_rate"])
-        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.999)
 
         # set up data loaders
         training_dataloader, validation_dataloader, test_dataloader=get_data_loaders(const.DATASET,training_parameters["batch_size_train"])
