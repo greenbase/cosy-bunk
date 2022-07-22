@@ -1,3 +1,6 @@
+"""
+Sets up the objective function to optimize during hyperparameter tuning.
+"""
 import pickle
 import optuna
 import torch
@@ -7,6 +10,9 @@ import constants as const
 import csv
 
 class Objective(object):
+    """
+    Defines a callable instance representing an optuna objective function.
+    """
     def __init__(self):
         self.accuracy_max=0
 

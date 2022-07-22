@@ -1,9 +1,12 @@
+"""
+Defines the multilayer perceptron class.
+"""
 from collections import OrderedDict
 import torch.nn as nn
 
 class MLP(nn.Module):
     """
-    Sets up a multi-layer perceptron that approximates a multi-output regression function.
+    Sets up an mlp that approximates a multi-output regression function.
 
     Parameters
     ----------
@@ -17,11 +20,6 @@ class MLP(nn.Module):
         Activation function used in hidden layer neurons
     neurons_per_layer : int
         Number of neuron in each hidden layer
-
-    Returns
-    -------
-    model : torch.Sequential
-        Pytorch model of sequentialy stacked layers and activation functions
     """
 
     def __init__(self,input_size,output_size, hidden_layer_total=2, activation_fn=nn.ReLU(), neurons_per_layer=16,**kwargs) -> None:
@@ -45,9 +43,6 @@ class MLP(nn.Module):
 
         # build mlp
         self.linear_relu_stack=nn.Sequential(layers)
-
-        # Get cpu or gpu device for training.
-
 
     def forward(self,x):
         """

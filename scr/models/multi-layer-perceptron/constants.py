@@ -1,3 +1,7 @@
+"""
+Defines several constants that are used in other modules from the 'multi-layer-perceptron' directory.
+"""
+
 import torch.cuda
 from sleeping_position_dataset import SleepingPositionDataset
 import pickle
