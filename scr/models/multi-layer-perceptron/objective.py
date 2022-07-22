@@ -1,3 +1,6 @@
+"""
+Sets up the objective function to optimize during hyperparameter tuning.
+"""
 import pickle
 import optuna
 import torch
@@ -7,6 +10,9 @@ import constants as const
 import csv
 
 class Objective(object):
+    """
+    Defines a callable instance representing an optuna objective function.
+    """
     def __init__(self):
         self.accuracy_max=0
 
@@ -18,7 +24,7 @@ class Objective(object):
             "neurons_per_layer" : trial.suggest_int("neurons_per_layer",50,70,5)
         }
         training_parameters={
-            "epochs_total": trial.suggest_int("epochs_total",2000,2000,5000),
+            "epochs_total": trial.suggest_int("epochs_total",5000,5000,5000),
             "batch_size_train": trial.suggest_int("batch_size_train",2,20,2),
             "learning_rate": trial.suggest_float("learning_rate",0.2,1.2)
         }

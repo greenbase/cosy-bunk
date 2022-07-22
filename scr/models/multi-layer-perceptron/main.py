@@ -1,5 +1,7 @@
 """
+Execute hyperparameter tuning for neural network.
 
+Optionally defines a starting point for the hyperparameter tuning and saves Parameters of the best model to the 'models' directory.
 """
 import os
 import sys
@@ -23,14 +25,14 @@ starting_point={
     "hidden_layer_total":4,
     "neurons_per_layer":60,
     "batch_size_train":10,
-    "learning_rate":0.4,
+    "learning_rate":0.3,
 }
 
 def main():
     # perform hyperparameter tuning
     study=optuna.create_study(direction="maximize",pruner=ThresholdPruner(upper=24,n_warmup_steps=999))
     study.enqueue_trial(starting_point)
-    study.optimize(Objective(), n_trials=5)
+    study.optimize(Objective(), n_trials=1)
 
     # save best hyperparameters and best model
     with open(const.PATH_NEURAL_NET_PARAMETERS,"w",encoding="utf-8") as file:
@@ -38,14 +40,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
-
-
-    # # plot losses over epochs
-    # losses=pd.DataFrame(losses,columns=["Epochen","Absolute Mean Loss"])
-    # fig=px.line(losses,x="Epochen",y="Absolute Mean Loss", title="Training of Neural Networks")
-    # fig.show()
-    # print("Done!")
-
-    # study=optuna.create_study(direction="maximize")
-    # study.optimize(objective,n_trials=100)
