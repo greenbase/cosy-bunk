@@ -3,6 +3,9 @@ Implements a monitoring dashboard for hyperparameter tuning.
 
 Dashboard tracks error in approximation of joint positions and accuracy of
 postures approximated correctly.
+
+Usesage:
+Excecute this module as a script simultaneously with '../main.py'
 """
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
