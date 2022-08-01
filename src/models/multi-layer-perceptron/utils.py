@@ -94,9 +94,9 @@ def test(dataloader, model):
             joint_coordinates_array[sample_index] = joint_coordinates
 
         predictions_array = const.POSITION_SCALER.inverse_transform(
-            predictions_array.reshape((1, -1)))
+            predictions_array)
         joint_coordinates_array = const.POSITION_SCALER.inverse_transform(
-            joint_coordinates_array.reshape((1, -1)))
+            joint_coordinates_array)
         distance_avg, accuracy = get_metrics(predictions_array, joint_coordinates_array)
 
     return distance_avg, accuracy
