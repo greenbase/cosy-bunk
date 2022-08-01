@@ -111,7 +111,7 @@ def draw_position_and_image(targets, preds, time_stamps, image_path, result_path
         plt.savefig(result_path.joinpath("predictions_{0}-{1}.png".format(idx, idx + 7)))
 
 
-def save_metrics(targets, preds, path):
+def save_metrics(distance_avg_mm, accuracy, path):
     """Calculates relevant metrics and saves them to txt-file under specified path.
 
     Args:
@@ -123,12 +123,9 @@ def save_metrics(targets, preds, path):
             the order is important and that corresponding x and y coordinate have to be successive.
         path(Path): Absolute or relative path for saving result txt-file.
     """
-    # TODO add metric according to 'model_quality_criteria.md'
-    mse = mean_squared_error(preds, targets)
-    mae = mean_absolute_error(preds, targets)
     with open(path.joinpath('metrics.txt'), 'w') as f:
-        f.write("Mean Sqared Error: {}\n".format(mse))
-        f.write("Mean Absolute Error: {}\n".format(mae))
+        f.write(f"Average joint distance in mm: {distance_avg_mm}\n")
+        f.write(f"Accuracy: {accuracy}\n")
 
 def get_metrics(predictions, targets, scaler):
     """
@@ -137,9 +134,9 @@ def get_metrics(predictions, targets, scaler):
     Parameters
     ----------
     predictions : array
-        Array of predicted joint coordinates. Shape: (Testsamples x 34)
+        Array of predicted and scaled joint coordinates. Shape: (Testsamples x 34)
     targets : array
-        Array of measured joint coordinates.
+        Array of measured and scaled joint coordinates.
     scaler : Instance of DataScaler
         Scaler previously used to scale data. Used here to perform inverse scaling.
     
