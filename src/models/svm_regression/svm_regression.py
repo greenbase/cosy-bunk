@@ -7,11 +7,13 @@ import numpy as np
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
 import pickle
-import os 
+import os
 import sys
+
 os.chdir(Path(__file__).parent)
-sys.path.append(os.path.realpath("..\..\.."))
-from scr.utility import DataScaler, draw_position_and_image, save_metrics,get_metrics
+sys.path.append(os.path.realpath("../.."))
+
+from utility import DataScaler, draw_position_and_image, save_metrics, get_metrics
 
 
 def gen_regressors(inp, out):
@@ -67,13 +69,8 @@ if __name__ == '__main__':
     PREDS_TEST = apply_regressors(REGRESSORS, INP_TEST)
 
     # validate model
-    # TODO refactor get_metrics to not depend on scaler. It currently expects
-    # scaled data input
-    TARGETS_TEST=OUT_TEST.to_numpy()
-    PREDS_TEST=np.array(PREDS_TEST).transpose()
-    distance_avg_mm, accuracy=get_metrics(PREDS_TEST,TARGETS_TEST,OUT_SCALER)
-    save_metrics(distance_avg_mm, accuracy, RESULT_PATH)
-
-    TARGETS_TEST_INV = OUT_SCALER.inverse_transform(TARGETS_TEST)
-    PREDS_INV = OUT_SCALER.inverse_transform(PREDS_TEST)
+    TARGETS_TEST_INV = OUT_SCALER.inverse_transform(OUT_TEST.to_numpy())
+    PREDS_INV = OUT_SCALER.inverse_transform(np.array(PREDS_TEST).transpose())
+    distance_avg, accuracy = get_metrics(PREDS_INV, TARGETS_TEST_INV)
+    save_metrics(distance_avg, accuracy, RESULT_PATH)
     draw_position_and_image(TARGETS_TEST_INV, PREDS_INV, TIMESTAMPS_TEST, IMAGE_PATH, RESULT_PATH)

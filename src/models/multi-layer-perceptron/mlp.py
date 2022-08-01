@@ -4,6 +4,7 @@ Defines the multilayer perceptron class.
 from collections import OrderedDict
 import torch.nn as nn
 
+
 class MLP(nn.Module):
     """
     Sets up an mlp that approximates a multi-output regression function.
@@ -22,29 +23,30 @@ class MLP(nn.Module):
         Number of neuron in each hidden layer
     """
 
-    def __init__(self,input_size,output_size, hidden_layer_total=2, activation_fn=nn.ReLU(), neurons_per_layer=16,**kwargs) -> None:
+    def __init__(self, input_size, output_size, hidden_layer_total=2, activation_fn=nn.ReLU(),
+                 neurons_per_layer=16, **kwargs) -> None:
         super().__init__()
-        layers=OrderedDict()
+        layers = OrderedDict()
 
         # collect layers
-        for layer_index in range(1,hidden_layer_total+1):
-            if layer_index==1:
+        for layer_index in range(1, hidden_layer_total + 1):
+            if layer_index == 1:
                 # add first hidden layer
-                layers[f"hl_{layer_index}"]=nn.Linear(input_size,neurons_per_layer)
-                layers[f"hl_{layer_index}_activation"]=activation_fn
+                layers[f"hl_{layer_index}"] = nn.Linear(input_size, neurons_per_layer)
+                layers[f"hl_{layer_index}_activation"] = activation_fn
                 continue
             # add additional layers
-            layers[f"hl_{layer_index}"]=nn.Linear(neurons_per_layer,neurons_per_layer)
-            layers[f"hl_{layer_index}_activation"]=activation_fn
+            layers[f"hl_{layer_index}"] = nn.Linear(neurons_per_layer, neurons_per_layer)
+            layers[f"hl_{layer_index}_activation"] = activation_fn
 
         # add output layer
-        layers["output_layer"]=nn.Linear(neurons_per_layer,output_size)
-        layers["output_layer_activation"]=nn.Tanh()
+        layers["output_layer"] = nn.Linear(neurons_per_layer, output_size)
+        layers["output_layer_activation"] = nn.Tanh()
 
         # build mlp
-        self.linear_relu_stack=nn.Sequential(layers)
+        self.linear_relu_stack = nn.Sequential(layers)
 
-    def forward(self,x):
+    def forward(self, x):
         """
         Specifies how the data will be passed forward through the network.
         
@@ -58,5 +60,5 @@ class MLP(nn.Module):
         logits : array-like
             Array of logits as computed for one hidden layer.
         """
-        logits=self.linear_relu_stack(x)
+        logits = self.linear_relu_stack(x)
         return logits

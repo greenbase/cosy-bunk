@@ -9,7 +9,6 @@ equal as well as the order of files within each folder must match the order in t
 For details on the table of data build see references>data>explanation-column-names.md
 """
 
-
 import os
 import sys
 
@@ -82,6 +81,7 @@ def load_out(path):
                 joint_dict = joints_data[joint_index]
 
                 positions.append(joint_dict['position']['v'][:2])
+
             positions_flat = np.expand_dims(np.array(positions).flatten(), axis=0)
             df_joints = df_joints.append(pd.DataFrame(positions_flat, columns=joint_column_names))
             df_time_stamps = df_time_stamps.append(

@@ -1,2 +1,2 @@
-Average joint distance in mm: 25.476031691987682
+Average joint distance in mm: 25.480276869827527
 Accuracy: 0.37261146496815284
