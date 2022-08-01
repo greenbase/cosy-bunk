@@ -7,10 +7,14 @@ from mlp import MLP
 import pickle
 import torch
 from pathlib import Path
-from scr.utility import draw_position_and_image
 import io
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import os
+import sys
+os.chdir(Path(__file__).parent)
+sys.path.append(os.path.realpath("..\..\..\src"))
+from utility import draw_position_and_image, save_metrics
 
 
 class CPUUnpickler(pickle.Unpickler):
@@ -54,8 +58,8 @@ if __name__ == '__main__':
             mlp = pickle.load(mlp_file)
 
     # test mlp model
-    distance_avg_mm, accuracy = utils.test(test_dataloader, mlp)
-    print(distance_avg_mm, accuracy)
+    distance_avg, accuracy = utils.test(test_dataloader, mlp)
+    save_metrics(distance_avg, accuracy, RESULT_PATH)
 
     # draw posture images
     mlp.eval()

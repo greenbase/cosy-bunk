@@ -1,5 +1,5 @@
 """
-Defines utility functions used in other modules.
+Defines utility functions used in multilayer-perceptron module.
 
 Functions
 ---------
@@ -12,17 +12,18 @@ from torch.nn import L1Loss
 import torch.utils.data as tud
 import constants as const
 import numpy as np
-
-# make modules from scr importable
 import os
 import sys
 from pathlib import Path
+
+# make modules from src importable
 os.chdir(Path(__file__).parent)
-sys.path.append(os.path.realpath("..\.."))
+sys.path.append(os.path.realpath("../.."))
 
 from utility import get_metrics
 
 loss_fn = L1Loss(reduction="mean")
+
 
 def train(dataloader, model, optimizer):
     """
@@ -50,12 +51,13 @@ def train(dataloader, model, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    
+
         if batch % 10 == 0:
             loss, current = loss.item(), batch * len(X)
-            #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            # print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
-def test(dataloader,model):
+
+def test(dataloader, model):
     """
     Use validation or test dataloader to test model.
 
@@ -68,43 +70,49 @@ def test(dataloader,model):
 
     Returns
     -------
-    distance_avg_mm : float
+    distance_avg : float
         average distance of predicted joint position and target position
     accuracy : float
         proportion of body postures sufficiently accurate approximated
     """
     model.eval()
-    predictions_array=np.zeros((len(dataloader),34))
-    joint_coordinates_array=np.zeros((len(dataloader),34))
+    predictions_array = np.zeros((len(dataloader), 34))
+    joint_coordinates_array = np.zeros((len(dataloader), 34))
 
     # make predictions for each test sample
     with torch.no_grad():
         for sample_index, (slat_forces, joint_coordinates) in enumerate(dataloader):
             slat_forces = slat_forces.to(const.DEVICE)
             joint_coordinates = joint_coordinates.to(const.DEVICE)
-            predictions=model(slat_forces)  # predict single sample
+            predictions = model(slat_forces)  # predict single sample
 
             # convert prediction and target tensors to numpy arrays
-            predictions=predictions.detach().cpu().numpy()
-            joint_coordinates=joint_coordinates.detach().cpu().numpy()
+            predictions = predictions.detach().cpu().numpy()
+            joint_coordinates = joint_coordinates.detach().cpu().numpy()
 
-            predictions_array[sample_index]=predictions
-            joint_coordinates_array[sample_index]=joint_coordinates
-            
-        distance_avg_mm, accuracy=get_metrics(predictions_array,joint_coordinates_array,const.POSITION_SCALER)
+            predictions_array[sample_index] = predictions
+            joint_coordinates_array[sample_index] = joint_coordinates
 
-    return distance_avg_mm, accuracy
+        predictions_array = const.POSITION_SCALER.inverse_transform(
+            predictions_array.reshape((1, -1)))
+        joint_coordinates_array = const.POSITION_SCALER.inverse_transform(
+            joint_coordinates_array.reshape((1, -1)))
+        distance_avg, accuracy = get_metrics(predictions_array, joint_coordinates_array)
 
-def get_data_loaders(dataset,batch_size_train=32):
+    return distance_avg, accuracy
+
+
+def get_data_loaders(dataset, batch_size_train=32):
     """
-    Returns tuple of dataloaders: (train,valid,test)
+    Returns tuple of dataloaders: (train, valid, test)
     
     Parameters
     ----------
     dataset : torch.utils.data.Dataset
         Set of data to be distributed to the dataloaders
     batch_size_train : int
-        Number of samples per batch from the training dataloader. Note: validation and test dataloader use batch_size=1
+        Number of samples per batch from the training dataloader. Note: validation and test
+        dataloader use batch_size=1.
 
     Returns
     -------
@@ -113,23 +121,22 @@ def get_data_loaders(dataset,batch_size_train=32):
     """
     # set sizes for data split
     # training data 70% of all data; validation and test data 15% each
-    # TODO make calulation of lenght robust for even and odd numbers
-    training_data_length    = int(len(dataset)*0.7)+1  
-    validation_data_length  = int((len(dataset)-training_data_length)/2)
-    test_data_length        = validation_data_length
+    training_data_length = int(len(dataset) * 0.7) + len(dataset) % 2
+    validation_data_length = int((len(dataset) - training_data_length) / 2)
+    test_data_length = validation_data_length
 
     # split data
-    training_dataset,validation_dataset,test_dataset=tud.random_split(
+    training_dataset, validation_dataset, test_dataset = tud.random_split(
         dataset=dataset,
-        lengths=[training_data_length,validation_data_length,test_data_length],
+        lengths=[training_data_length, validation_data_length, test_data_length],
         generator=torch.Generator().manual_seed(42))
 
     # instantiate dataloaders
-    training_dataloader=tud.DataLoader(
+    training_dataloader = tud.DataLoader(
         training_dataset,
         batch_size=batch_size_train,
         shuffle=True)
-    validation_dataloader=tud.DataLoader(validation_dataset)
-    test_dataloader=tud.DataLoader(test_dataset)
+    validation_dataloader = tud.DataLoader(validation_dataset)
+    test_dataloader = tud.DataLoader(test_dataset)
 
-    return (training_dataloader,validation_dataloader,test_dataloader)
+    return training_dataloader, validation_dataloader, test_dataloader

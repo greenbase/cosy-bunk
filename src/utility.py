@@ -1,12 +1,8 @@
 """
-Abbreviations:
-mm  Millimeter
-avg Average
+Superordinate utility functions which are used by different modules.
 """
-from turtle import distance
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 import matplotlib.pyplot as plt
 
 
@@ -97,9 +93,9 @@ def draw_position_and_image(targets, preds, time_stamps, image_path, result_path
                 time_stamp = time_stamps[int((idx + ax_idx - 1) / 2)]
                 file_name = 'frame-body-{}.png'.format(time_stamp)
                 im = plt.imread(image_path.joinpath(file_name))
-                upper_start = int(0.07*np.shape(im)[0])
-                left_start = int(0.35*np.shape(im)[1])
-                right_end = int(0.65*np.shape(im)[1])
+                upper_start = int(0.07 * np.shape(im)[0])
+                left_start = int(0.35 * np.shape(im)[1])
+                right_end = int(0.65 * np.shape(im)[1])
                 ax.imshow(np.flip(im[upper_start:, left_start:right_end], axis=1))
                 ax.axis('off')
                 ax.set_title(time_stamp, size=9)
@@ -111,67 +107,61 @@ def draw_position_and_image(targets, preds, time_stamps, image_path, result_path
         plt.savefig(result_path.joinpath("predictions_{0}-{1}.png".format(idx, idx + 7)))
 
 
-def save_metrics(distance_avg_mm, accuracy, path):
-    """Calculates relevant metrics and saves them to txt-file under specified path.
+def save_metrics(distance_avg, accuracy, path):
+    """Saves given average distance and accuracy to txt-file under specified path.
 
     Args:
-        targets(:obj:`np.ndarray`): Target joint data of shape (<num samples>, 34,), where the
-            second axis contains 17 joints of interest with one x and one y coordinate. Note that
-            the order is important and that corresponding x and y coordinate have to be successive.
-        preds(:obj:`np.ndarray`): Predicted joint data of shape (<num samples>, 34,), where the
-            second axis contains 17 joints of interest with one x and one y coordinate. Note that
-            the order is important and that corresponding x and y coordinate have to be successive.
+        distance_avg(float): Average distance to save.
+        accuracy(float): Accuracy to save.
         path(Path): Absolute or relative path for saving result txt-file.
     """
     with open(path.joinpath('metrics.txt'), 'w') as f:
-        f.write(f"Average joint distance in mm: {distance_avg_mm}\n")
+        f.write(f"Average joint distance in mm: {distance_avg}\n")
         f.write(f"Accuracy: {accuracy}\n")
 
-def get_metrics(predictions, targets, scaler):
+
+def get_metrics(predictions, targets):
     """
     Calculates the proportion of sleeping positions predicted correctly within tolerance.
     
     Parameters
     ----------
-    predictions : array
-        Array of predicted and scaled joint coordinates. Shape: (Testsamples x 34)
-    targets : array
-        Array of measured and scaled joint coordinates.
-    scaler : Instance of DataScaler
-        Scaler previously used to scale data. Used here to perform inverse scaling.
+    predictions : :obj:`np.ndarray`
+        Array of predicted joint coordinates with shape (Testsamples x 34). Note that the data must
+        have its original scaling and must not be normalized.
+    targets : :obj:`np.ndarray`
+        Array of target joint coordinates with shape (Testsamples x 34). Note that the data must
+        have its original scaling and must not be normalized.
     
     Returns
     -------
-    loss_avg : float
+    distance_avg : float
         Average error for a single coordinate prediction
     accuracy : float
-        Proportion of samples for which all predicted joint positions fall into specified radial tolerance area around the target joint.
+        Proportion of samples for which all predicted joint positions fall into specified radial
+        tolerance area around the target joint.
     """
-    distance_sum_mm = 0
+    distance_sum = 0
     positions_correct_count = 0
     SAMPLES_TOTAL = len(predictions)
+    sample_distances = np.array([])
 
-    for sample_prediction, sample_target in zip(predictions,targets):
-        # rescale values to Millimeters
-        sample_prediction_mm=scaler.inverse_transform(sample_prediction.reshape((1,-1)))
-        sample_target_mm = scaler.inverse_transform(sample_target.reshape((1,-1)))
-
+    for sample_prediction, sample_target in zip(predictions, targets):
         # reshape sample arrays. New shape: (Joints x joint-coordinates)
-        sample_prediction_mm=sample_prediction_mm.reshape((17,2))
-        sample_target_mm=sample_target_mm.reshape((17,2))
+        sample_prediction = sample_prediction.reshape((17, 2))
+        sample_target = sample_target.reshape((17, 2))
 
-        # calculate euclidean distance between predicted joint positions and
-        # target positions
-        sample_distances_mm=np.linalg.norm(sample_prediction_mm - sample_target_mm,axis=1)
-        distance_sum_mm+=np.sum(sample_distances_mm)
+        # calculate euclidean distance between predicted joint positions and target positions
+        sample_distances = np.linalg.norm(sample_prediction - sample_target, axis=1)
+        distance_sum += np.sum(sample_distances)
 
-        # check if any joint is out of tolerance and count No. of sleeping
-        # positions for which all joint fall within tolerance area
-        distance_tolerance_mm = 50
-        if np.all(sample_distances_mm < distance_tolerance_mm):
-            positions_correct_count+=1
+        # check if any joint is out of tolerance and count No. of sleeping positions for which all
+        # joint fall within tolerance area
+        distance_tolerance = 50
+        if np.all(sample_distances < distance_tolerance):
+            positions_correct_count += 1
 
     accuracy = positions_correct_count / SAMPLES_TOTAL
-    distance_mm_avg = distance_sum_mm / (len(sample_distances_mm)*SAMPLES_TOTAL)
+    distance_avg = distance_sum / (len(sample_distances) * SAMPLES_TOTAL)
 
-    return distance_mm_avg, accuracy
+    return distance_avg, accuracy
